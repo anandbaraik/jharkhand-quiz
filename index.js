@@ -3,21 +3,10 @@ let readlineSync = require('readline-sync');
 let chalk = require("chalk");
 const log = console.log;
 
-//welcome user
-let userName = readlineSync.question(chalk.white.bgBlue.bold('May i know your name please..?'));
-log(chalk.magenta(`\nWelcome ${userName}, let's see how well DO YOU KNOW ABOUT 'JHARKHAND'..?`));
+//initialize game's variables
+let userScore = 0;
+let isUserBeatScore = false;
 
-//let user know rules
-log(chalk.bgMagenta.bold("\nRules: "));
-log(chalk.bgBlue("1. There are total of 8 questions. All are compulsory."));
-log(chalk.bgBlue("2. Choose options from 1/2/3/4."));
-log(chalk.bgBlue("3. Each right answer will give you 3 points."));
-log(chalk.bgBlue("4. 1 point will be deducted for each wrong answers.\n\n"));
-
-readlineSync.questionInt(chalk.white.bgBlue.bold('Enter any number to start quiz!'));
-console.clear();
-
-//questions for quiz
 let questions = [
   {
     "question": "In which year Jharkhand was formed as a separate state..?",
@@ -61,27 +50,6 @@ let questions = [
   }
 ];
 
-//execute game
-let userScore = 0;
-function play({ question, options, answer }) {
-  log(chalk.bgCyan(question));
-  let userAnswer = readlineSync.keyInSelect(options, chalk.cyan('Choose your option.'), { cancel: false });
-  if (options[userAnswer] === answer) {
-    userScore += 3;
-    log(chalk.green("\nYou were right! 😊"));
-  } else {
-    userScore -= 1;
-    log(chalk.red("\nYou were wrong! 😔"));
-  }
-  log("Your current score is " + userScore);
-  log(chalk.cyan("*************************\n"));
-}
-
-for (let i = 0; i < questions.length; i++) {
-  play(questions[i]);
-}
-
-//display scores
 let highScores = [
   {
     name: "Walter",
@@ -96,20 +64,63 @@ let highScores = [
     score: 10
   },
 ];
-let isUserBeatScore = false;
 
-log(chalk.magenta.bgWhite.bold('Check out the high scores: '));
-console.table(highScores);
+//welcome user
+function welcome() {
+  let userName = readlineSync.question(chalk.white.bgBlue.bold('May i know your name please..?'));
+  log(chalk.magenta(`\nWelcome ${userName}, let's see how well DO YOU KNOW ABOUT 'JHARKHAND'..?`));
 
-highScores.forEach(({ name, score }) => {
-  if (userScore > score) isUserBeatScore = true;
-});
+  //let user know rules
+  log(chalk.bgMagenta.bold("\nRules: "));
+  log(chalk.bgBlue("1. There are total of 8 questions. All are compulsory."));
+  log(chalk.bgBlue("2. Choose options from 1/2/3/4."));
+  log(chalk.bgBlue("3. Each right answer will give you 3 points."));
+  log(chalk.bgBlue("4. 1 point will be deducted for each wrong answers.\n\n"));
 
-log(chalk.bgMagenta("\n Yay! your highest score is " + userScore));
-
-if (isUserBeatScore) {
-  log(chalk.green("\n Congrats! 🎉 you made to the leaderboard. your name will be added to leaderboard. 🎊"));
-  log(chalk.yellow("\nJust send me the screenshot of score! 😀"));
-} else {
-  log(chalk.red("\n Sorry!! you failed to beat the highest score! 😐\n"));
+  readlineSync.questionInt(chalk.white.bgBlue.bold('Enter any number to start quiz!'));
+  console.clear();
 }
+
+//execute game
+function play({ question, options, answer }) {
+  log(chalk.bgCyan(question));
+  let userAnswer = readlineSync.keyInSelect(options, chalk.cyan('Choose your option.'), { cancel: false });
+  if (options[userAnswer] === answer) {
+    userScore += 3;
+    log(chalk.green("\nYou were right! 😊"));
+  } else {
+    userScore -= 1;
+    log(chalk.red("\nYou were wrong! 😔"));
+  }
+  log("Your current score is " + userScore);
+  log(chalk.cyan("*************************\n"));
+}
+
+function game() {
+  for (let i = 0; i < questions.length; i++) {
+    play(questions[i]);
+  }
+}
+
+function showScores() {
+
+  log(chalk.magenta.bgWhite.bold('Check out the high scores: '));
+  console.table(highScores);
+
+  highScores.forEach(({ name, score }) => {
+    if (userScore > score) isUserBeatScore = true;
+  });
+
+  log(chalk.bgMagenta("\n Yay! your highest score is " + userScore));
+
+  if (isUserBeatScore) {
+    log(chalk.green("\n Congrats! 🎉 you made to the leaderboard. your name will be added to leaderboard. 🎊"));
+    log(chalk.yellow("\nJust send me the screenshot of score! 😀"));
+  } else {
+    log(chalk.red("\n Sorry!! you failed to beat the highest score! 😐\n"));
+  }
+}
+
+welcome();
+game();
+showScores();
